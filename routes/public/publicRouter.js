@@ -1,7 +1,10 @@
 import express from "express";
 import crypto from "crypto";
+import axios from "axios";
 import { faker } from "@faker-js/faker";
 import verifyToken from "../../middleware/verifyToken.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const publicRouter = express.Router();
 
@@ -41,5 +44,42 @@ publicRouter.get(
     res.status(200).json({ identity: fakeIdentity });
   }
 );
+
+publicRouter.post("/features/verify-email", verifyToken, async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const apiKey = process.env.HUNTER_API_KEY;
+    const response = await axios.get(
+      `https://api.hunter.io/v2/email-verifier`,
+      {
+        params: {
+          email,
+          api_key: apiKey,
+        },
+      }
+    );
+
+    if (response.data && response.data.data) {
+      const verificationResult = response.data.data;
+      res.status(200).json({
+        message: "Email verification completed",
+        result: verificationResult,
+      });
+    } else {
+      res.status(400).json({ message: "Invalid email or verification failed" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while verifying the email",
+      error: error.message,
+    });
+  }
+});
 
 export default publicRouter;
