@@ -117,4 +117,39 @@ publicRouter.post(
   }
 );
 
+publicRouter.post("/features/domain-info", verifyToken, async (req, res) => {
+  const { domain } = req.body;
+
+  if (!domain) {
+    return res.status(400).json({ message: "Domain is required" });
+  }
+
+  try {
+    const apiKey = process.env.SECURITYTRAILS_API_KEY;
+    const response = await axios.get(
+      `https://api.securitytrails.com/v1/domain/${domain}/subdomains`,
+      {
+        headers: {
+          APIKEY: apiKey,
+        },
+      }
+    );
+
+    const subdomains = response.data.subdomains || [];
+
+    const fullDomains = subdomains.map((subdomain) => `${subdomain}.${domain}`);
+
+    res.status(200).json({
+      domain: domain,
+      subdomains: fullDomains,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error fetching domain information",
+      error: error.message,
+    });
+  }
+});
+
 export default publicRouter;
