@@ -1,6 +1,8 @@
 import express from "express";
 import crypto from "crypto";
 import axios from "axios";
+import fs from "fs";
+import path from "path";
 import { faker } from "@faker-js/faker";
 import verifyToken from "../../middleware/verifyToken.js";
 import dotenv from "dotenv";
@@ -81,5 +83,38 @@ publicRouter.post("/features/verify-email", verifyToken, async (req, res) => {
     });
   }
 });
+
+const commonPasswordsPath = path.join(
+  path.resolve(),
+  "data",
+  "common-passwords.txt"
+);
+
+const commonPasswords = fs
+  .readFileSync(commonPasswordsPath, "utf-8")
+  .split("\n")
+  .map((password) => password.trim());
+
+publicRouter.post(
+  "/features/check-common-password",
+  verifyToken,
+  (req, res) => {
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+
+    const isCommon = commonPasswords.includes(password);
+
+    if (isCommon) {
+      return res.status(200).json({
+        message: "Password is too common, please choose a more secure one.",
+      });
+    }
+
+    res.status(200).json({ message: "Password is secure." });
+  }
+);
 
 export default publicRouter;
