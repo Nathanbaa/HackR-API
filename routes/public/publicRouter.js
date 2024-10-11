@@ -307,4 +307,57 @@ publicRouter.post("/features/domain-info", verifyToken, async (req, res) => {
   }
 });
 
+// crawl person
+publicRouter.post("/features/crawl-person", verifyToken, async (req, res) => {
+  const { firstName, lastName } = req.body;
+
+  // Vérifier que le prénom et le nom sont fournis
+  if (!firstName || !lastName) {
+    return res
+      .status(400)
+      .json({ message: "First name and last name are required" });
+  }
+
+  try {
+    const apiKey = process.env.PEOPLEDATALABS_API_KEY;
+
+    // Vérifier que la clé API est définie
+    if (!apiKey) {
+      return res.status(500).json({ message: "API key is missing" });
+    }
+
+    // Requête vers l'API People Data Labs avec prénom et nom
+    const response = await axios.get(
+      `https://api.peopledatalabs.com/v5/person/search`,
+      {
+        params: {
+          api_key: apiKey,
+          first_name: firstName,
+          last_name: lastName,
+        },
+      }
+    );
+
+    const personInfo = response.data;
+
+    // Vérifier si des résultats ont été trouvés
+    if (personInfo && personInfo.data && personInfo.data.length > 0) {
+      res.status(200).json({
+        message: "Person information retrieved successfully",
+        results: personInfo.data,
+      });
+    } else {
+      res
+        .status(404)
+        .json({ message: "No information found for the provided person." });
+    }
+  } catch (error) {
+    console.error("Error fetching person info:", error);
+    res.status(500).json({
+      message: "An error occurred while fetching person information",
+      error: error.message,
+    });
+  }
+});
+
 export default publicRouter;
