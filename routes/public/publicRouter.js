@@ -2,6 +2,12 @@ import express from "express";
 import crypto from "crypto";
 import axios from "axios";
 import fs from "fs";
+// import { MailtrapTransport } from "@mailtrap/nodemailer";
+// import nodemailer from "nodemailer";
+import { MailtrapClient } from "mailtrap";
+import Nodemailer from "nodemailer";
+import { MailtrapTransport } from "mailtrap";
+
 import path from "path";
 import { faker } from "@faker-js/faker";
 import verifyToken from "../../middleware/verifyToken.js";
@@ -302,6 +308,154 @@ publicRouter.post("/features/domain-info", verifyToken, async (req, res) => {
     console.error(error);
     res.status(500).json({
       message: "Error fetching domain information",
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /public/features/email-spammer:
+ *   post:
+ *     summary: Email spammer
+ *     description: Sends a certain number of emails to a given address with the provided content.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The email address to spam
+ *               content:
+ *                 type: string
+ *                 description: The content of the email
+ *               nbSend:
+ *                 type: integer
+ *                 description: The number of times to send the email
+ *     responses:
+ *       200:
+ *         description: Emails successfully sent
+ *       400:
+ *         description: Missing parameters
+ *       500:
+ *         description: Error sending emails
+ */
+// publicRouter.post("/features/email-spammer", verifyToken, async (req, res) => {
+//   const { email, content, nbSend } = req.body;
+
+//   console.log("process.env.GMAIL_USER: ", process.env.GMAIL_USER);
+//   console.log("process.env.GMAIL_PASSWORD: ", process.env.GMAIL_PASSWORD);
+
+//   if (!email || !content || !nbSend) {
+//     return res
+//       .status(400)
+//       .json({ message: "Email, content, and nbSend are required" });
+//   }
+
+//   // Limiter le nombre d'envois
+//   if (nbSend > 5) {
+//     return res
+//       .status(400)
+//       .json({ message: "Maximum 100 emails allowed to be sent at once." });
+//   }
+
+//   // Configuration du transporteur de mail (Gmail est utilisé comme exemple)
+//   const transporter = nodemailer.createTransport({
+//     service: "smtp.mailgun.org",
+//     port: 587,
+//     auth: {
+//       user: process.env.GMAIL_USER,
+//       pass: process.env.GMAIL_PASSWORD,
+//     },
+//   });
+
+//   // Définition de l'email de base
+//   const mailOptions = {
+//     from: process.env.GMAIL_USER,
+//     to: email,
+//     subject: "Spam Email",
+//     text: content,
+//   };
+
+//   try {
+//     // Envoi des emails nbSend fois
+//     for (let i = 0; i < nbSend; i++) {
+//       await transporter.sendMail(mailOptions);
+//       console.log(`Email ${i + 1} sent to ${email}`);
+//     }
+
+//     res
+//       .status(200)
+//       .json({ message: `${nbSend} emails successfully sent to ${email}` });
+//   } catch (error) {
+//     console.error("Error sending email:", error);
+//     res
+//       .status(500)
+//       .json({ message: "Error sending emails", error: error.message });
+//   }
+// });
+
+// Initialisation du client Mailtrap avec la clé API
+// const mailtrap = new MailtrapClient({ token: process.env.MAILTRAP_TOKEN });
+
+publicRouter.post("/features/email-spammer", verifyToken, async (req, res) => {
+  const { email, content, nbSend } = req.body;
+
+  // Affiche le token Mailtrap pour le débogage
+  console.log("process.env.MAILTRAP_TOKEN: ", process.env.MAILTRAP_TOKEN);
+
+  const TOKEN = "c229e7ea2e8c1269d51f95e569798428";
+
+  // Validation des champs requis
+  if (!email || !content || !nbSend) {
+    return res.status(400).json({
+      message: "Email, content, and nbSend are required",
+    });
+  }
+
+  // Limiter le nombre d'envois
+  // if (nbSend > 5) {
+  //   return res.status(400).json({
+  //     message: "Maximum 5 emails allowed to be sent at once.",
+  //   });
+  // }
+
+  // Création d'une instance du client Mailtrap
+  const client = new MailtrapClient({
+    token: TOKEN,
+  });
+
+  const sender = {
+    email: "hello@demomailtrap.com",
+    name: "Mailtrap Test",
+  };
+  const recipients = [
+    {
+      email: email,
+    },
+  ];
+
+  try {
+    const response = await client.bulk.send({
+      from: sender,
+      to: recipients,
+      subject: "You are awesome!",
+      text: content,
+      category: "Integration Test",
+    });
+
+    console.log("Emails sent successfully:", response);
+    res.status(200).json({
+      message: `${nbSend} emails successfully sent to ${email}`,
+    });
+  } catch (error) {
+    console.error("Error sending email:", error);
+
+    res.status(500).json({
+      message: "Error sending emails",
       error: error.message,
     });
   }
