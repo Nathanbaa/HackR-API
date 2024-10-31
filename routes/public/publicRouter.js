@@ -99,6 +99,9 @@ publicRouter.get(
   "/features/generate-fictive-identity",
   verifyToken,
   (req, res) => {
+    const birthDate = faker.date.birthdate({ min: 18, max: 65, mode: "age" });
+    const formattedBirthDate = birthDate.toISOString().split("T")[0];
+
     const fakeIdentity = {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
@@ -109,7 +112,7 @@ publicRouter.get(
         city: faker.location.city(),
         country: faker.location.country(),
       },
-      birthdate: faker.date.birthdate({ min: 18, max: 65, mode: "age" }),
+      birthdate: formattedBirthDate,
       avatar: faker.image.avatar(),
     };
 
