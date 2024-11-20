@@ -44,9 +44,7 @@ const mongoDB = process.env.MONGO_URI;
 
 const connectToMongoDB = async () => {
   try {
-    await mongoose.connect(mongoDB, {
-      useNewUrlParser: true,
-    });
+    await mongoose.connect(mongoDB);
     console.log("🟢 Connected to MongoDB successfully");
 
     createDefaultAdmin();
