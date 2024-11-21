@@ -1,11 +1,12 @@
 import express from "express";
-import verifyToken from "../../middleware/verifyToken.js";
-import verifyAdmin from "../../middleware/verifyAdmin.js";
+import emailSpammer from "../private/features/emailSpammer.js";
 
 const privateRouter = express.Router();
 
-privateRouter.get("/home", verifyToken, verifyAdmin, (req, res) => {
+privateRouter.get("/home", (req, res) => {
   res.send(`Hello ${req.user.firstName}, you are an Admin!`);
 });
+
+privateRouter.use("/", emailSpammer);
 
 export default privateRouter;

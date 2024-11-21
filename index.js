@@ -9,13 +9,15 @@ import authRouter from "./routes/authRouter.js";
 import publicRouter from "./routes/public/publicRouter.js";
 import privateRouter from "./routes/private/privateRouter.js";
 import createDefaultAdmin from "./utils/createDefaultAdmin.js";
+import verifyToken from "./middleware/verifyToken.js";
+import verifyAdmin from "./middleware/verifyAdmin.js";
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware global
+//  Global Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,11 +34,25 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000", // URL de base de l'API
+        url: "http://localhost:3000",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        jwtAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        jwtAuth: [],
       },
     ],
   },
-  apis: ["./routes/**/*.js"], // Indique où Swagger doit chercher les annotations
+  apis: ["./routes/**/*.js"],
 };
 
 // Mongo
@@ -58,20 +74,47 @@ connectToMongoDB();
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-// Routes publiques
+// Public routes
+app.get("/", (req, res) => {
+  const routes = `
+    <h1>Welcome to HackR API!</h1>
+    <p>Here is an overview of the available routes:</p>
+
+    <h2>Public Routes (Accessible by Admin and User):</h2>
+    <ul>
+      <li><strong>GET /public/features</strong><br>Description: Lists all available public routes.</li>
+      <li><strong>GET /public/features/generate-secured-password</strong><br>Description: Generates a random secured password using crypto.</li>
+      <li><strong>GET /public/features/generate-fictive-identity</strong><br>Description: Generates a fake identity with name, email, phone, address, birthdate, and avatar using Faker.js.</li>
+      <li><strong>GET /public/features/random-picture</strong><br>Description: Fetches a random image URL from 'thispersondoesnotexist.com' API.</li>
+      <li><strong>POST /public/features/verify-email</strong><br>Description: Verifies the existence of an email address using the Hunter.io API.</li>
+      <li><strong>POST /public/features/check-common-password</strong><br>Description: Verifies if a password is too common by checking it against a list of common passwords.</li>
+      <li><strong>POST /public/features/domain-info</strong><br>Description: Retrieves subdomains associated with a given domain using the SecurityTrails API.</li>
+      <li><strong>GET /public/features/crawl-person</strong><br>Description: Fetches information about a person based on their name and additional details using SerpAPI.</li>
+      <li><strong>POST /public/features/ddos-simulation</strong><br>Description: Initiates a DDoS simulation against the specified domain using worker threads.</li>
+    </ul>
+
+    <h2>Private Routes (Accessible only by Admin):</h2>
+    <ul>
+      <li><strong>GET /private/home</strong><br>Description: "Hello, you are an Admin!."</li>
+      <li><strong>POST /private/features/email-spammer</strong><br>Description: Sends a certain number of emails to a given address with the provided content.</li>
+      </ul>
+  `;
+
+  res.send(routes);
+});
+
+app.use("/auth", authRouter);
+
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.get("/", (req, res) => {
-  res.send("Welcome to HackR API");
-});
-app.use("/auth", authRouter);
-app.use("/public", publicRouter);
+// Public routes (Admin & Users)
+app.use("/public", verifyToken, publicRouter);
 
-// Routes privées
-app.use("/private", privateRouter);
+// Private routes (Admin)
+app.use("/private", verifyToken, verifyAdmin, privateRouter);
 
-// Démarrage du serveur
+// Start server
 app.listen(port, () => {
   console.log(`🟢 Server is running on port ${port}`);
   console.log(`📄 Swagger Docs available at http://localhost:${port}/api-docs`);
