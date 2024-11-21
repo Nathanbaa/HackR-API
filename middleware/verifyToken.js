@@ -18,7 +18,12 @@ const verifyToken = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    req.user = { id: user._id, firstName: user.first_name, role: user.role };
+    req.user = {
+      id: user._id,
+      firstName: user.first_name,
+      email: user.email,
+      role: user.role,
+    };
     next();
   } catch (error) {
     res.status(400).json({ message: "Invalid Token" });

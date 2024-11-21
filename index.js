@@ -11,6 +11,7 @@ import privateRouter from "./routes/private/privateRouter.js";
 import createDefaultAdmin from "./utils/createDefaultAdmin.js";
 import verifyToken from "./middleware/verifyToken.js";
 import verifyAdmin from "./middleware/verifyAdmin.js";
+import logFeatureUsage from "./middleware/logFeatureUsage.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(logFeatureUsage);
 
 // Swagger setup
 const swaggerOptions = {
