@@ -14,6 +14,10 @@ const logFeatureUsage = async (req, res, next) => {
     return next();
   }
 
+  if (req.originalUrl.startsWith("/private/logs")) {
+    return next();
+  }
+
   const startTime = Date.now();
 
   res.on("finish", async () => {
