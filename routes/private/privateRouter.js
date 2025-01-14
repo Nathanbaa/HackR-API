@@ -68,7 +68,7 @@ privateRouter.get("/logs", verifyToken, async (req, res) => {
     const totalPages = Math.ceil(totalLogs / pageSize);
 
     const logs = await Log.find()
-      .sort({ createdAt: -1 })
+      .sort({ timestamp: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .select(
