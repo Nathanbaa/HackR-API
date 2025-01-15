@@ -1,57 +1,58 @@
 # HackR-API
 
-## Cloner le projet
+## Clone project
 
 `git clone https://github.com/Nathanbaa/HackR-API.git`
 
-## Étapes d'installation
+## Installation steps
 
-0. Se déplacer dans le projet :
-   `cd HackR-API`
-1. Installer les dépendances principales :
+`cd HackR-API`
+
+1. Install the main dependencies :
    `npm install`
-2. Installer Nodemailer :
+2. Install Nodemailer :
    `npm install nodemailer`
-3. Créer un fichier `.env` :
-   - Copier le fichier `.env.example` et configurez les variables nécessaires dans `.env` :
+3. Create a file `.env` :
+   - Copy the file `.env.example` and configure the necessary variables in `.env` :
      `cp .env.example .env`
-   - Remplissez les valeurs dans le fichier `.env` selon votre configuration.
+   - Fill in the values in the `.env` according to your configuration.
 
-## Lancer l'API
+## Run API
 
 `npm run start`
 
-## Quelques liens
+## Some links
 
-### En local
+### Local
 
-**Accueil:**
+**Home:**
 [http://localhost:3000/](http://localhost:3000/)
 
-**Documentation swagger:**
+**Swagger Documentation:**
 [http://localhost:3000/api-docs/#/](http://localhost:3000/api-docs/#/)
 
-**S'inscrire en tant que user:** _(prénom, email, mot de passe)_
+**Register as a user:** _(prénom, email, mot de passe)_
 [http://localhost:3000/auth/register](http://localhost:3000/auth/register)
 
-**Se connecter:**
+**Login:**
 [http://localhost:3000/auth/login](http://localhost:3000/auth/login)
 
-**Se déconnecter:**
+**Disconnexion:**
 [http://localhost:3000/auth/logout](http://localhost:3000/auth/logout)
 
-## Informations de connexion
+## Login information
 
 ### User
 
-Email: `[user@mail.com](mailto:user@mail.com)`
-Mot de passe: `mdpUser`
+Register or with :
+email: user@mail.com
+password: mdpUser
 
 ### Admin
 
-Se rapprocher de l'auteur du repo
+Depending on what you specify in the variables of the .env
 
-## Fonctionnalités
+## Features
 
 ### **Public Routes (Accessible by Admin and User):**
 
