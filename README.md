@@ -21,47 +21,30 @@
 
 `npm run start`
 
-## Liens
+## Quelques liens
 
 ### En local
 
 **Accueil:**
-http://localhost:3000/
+[http://localhost:3000/](http://localhost:3000/)
 
 **Documentation swagger:**
-http://localhost:3000/api-docs/#/
+[http://localhost:3000/api-docs/#/](http://localhost:3000/api-docs/#/)
 
 **S'inscrire en tant que user:** _(prénom, email, mot de passe)_
-http://localhost:3000/auth/register
+[http://localhost:3000/auth/register](http://localhost:3000/auth/register)
 
 **Se connecter:**
-http://localhost:3000/auth/login
+[http://localhost:3000/auth/login](http://localhost:3000/auth/login)
 
 **Se déconnecter:**
-http://localhost:3000/auth/logout
-
-### En ligne
-
-**Accueil:**
-http://nathan.bastard.angers.mds-project.fr/HackR-API
-
-**Documentation swagger:**
-http://nathan.bastard.angers.mds-project.fr/api-docs/#/
-
-**S'inscrire en tant que user:** _(prénom, email, mot de passe)_
-http://nathan.bastard.angers.mds-project.fr/auth/register
-
-**Se connecter:**
-http://nathan.bastard.angers.mds-project.fr/auth/login
-
-**Se déconnecter:**
-http://nathan.bastard.angers.mds-project.fr/auth/logout
+[http://localhost:3000/auth/logout](http://localhost:3000/auth/logout)
 
 ## Informations de connexion
 
 ### User
 
-Email: `user@mail.com`
+Email: `[user@mail.com](mailto:user@mail.com)`
 Mot de passe: `mdpUser`
 
 ### Admin
