@@ -10,7 +10,7 @@
    `cd HackR-API`
 1. Installer les dépendances principales :
    `npm install`
-2. Installer Nodemailer si nécessaire :
+2. Installer Nodemailer :
    `npm install nodemailer`
 3. Créer un fichier `.env` :
    - Copier le fichier `.env.example` et configurez les variables nécessaires dans `.env` :
@@ -20,6 +20,53 @@
 ## Lancer l'API
 
 `npm run start`
+
+## Liens
+
+### En local
+
+**Accueil:**
+http://localhost:3000/
+
+**Documentation swagger:**
+http://localhost:3000/api-docs/#/
+
+**S'inscrire en tant que user:** _(prénom, email, mot de passe)_
+http://localhost:3000/auth/register
+
+**Se connecter:**
+http://localhost:3000/auth/login
+
+**Se déconnecter:**
+http://localhost:3000/auth/logout
+
+### En ligne
+
+**Accueil:**
+http://nathan.bastard.angers.mds-project.fr/HackR-API
+
+**Documentation swagger:**
+http://nathan.bastard.angers.mds-project.fr/api-docs/#/
+
+**S'inscrire en tant que user:** _(prénom, email, mot de passe)_
+http://nathan.bastard.angers.mds-project.fr/auth/register
+
+**Se connecter:**
+http://nathan.bastard.angers.mds-project.fr/auth/login
+
+**Se déconnecter:**
+http://nathan.bastard.angers.mds-project.fr/auth/logout
+
+## Informations de connexion
+
+### User
+
+Email: `user@mail.com`
+Mot de passe: `mdpUser`
+
+### Admin
+
+Se rapprocher de l'auteur du repo
 
 ## Fonctionnalités
 
